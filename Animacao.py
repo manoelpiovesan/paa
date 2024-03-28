@@ -17,6 +17,4 @@ class Animacao:
     def show(self):
         plt.show()
     
-    def close(self):
-        plt.close()
     
