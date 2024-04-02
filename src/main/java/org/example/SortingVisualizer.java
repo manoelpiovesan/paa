@@ -21,23 +21,26 @@ public class SortingVisualizer extends JPanel {
     public static void main(String[] args) {
         int[] array =
                 {90, 50, 30, 70, 80, 60, 20, 10, 40, 3, 123, 43, 78, 99, 200,
-                        132, 100, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 74, 23, 45, 67, 89, 12, 34, 56, 78, 90, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+                        132, 100, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                        74, 23, 45, 67, 89, 12, 34, 56, 78, 90, 1, 2, 3, 4, 5,
+                        6, 7, 8, 9, 10};
 
-        JFrame frame = new JFrame("Trabalho de PAA - Manoel e João Marcello");
+        JFrame frame = new JFrame("Trabalho de PAA - Manoel e Joao Marcello");
         SortingVisualizer visualizer = new SortingVisualizer(array, 100);
 
-        JPanel controlPanel = getControlPanel(visualizer);
+        JScrollPane controlPanel = getControlPanel(visualizer);
 
         frame.add(visualizer, BorderLayout.CENTER);
         frame.add(controlPanel, BorderLayout.SOUTH);
-        frame.setSize(1000, 600);
+        frame.setSize(600, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
 
     // Método que retorna o painel de controle
-    private static JPanel getControlPanel(SortingVisualizer visualizer) {
+    private static JScrollPane getControlPanel(SortingVisualizer visualizer) {
         JTextField arrayInputField = new JTextField(20);
+        // Injetando array inicial
         arrayInputField.setText(Arrays.toString(visualizer.getArray()));
 
         JButton generateButton = getjButton(visualizer, arrayInputField);
@@ -79,7 +82,8 @@ public class SortingVisualizer extends JPanel {
             }
         });
 
-        JButton binaryInsertionSortButton = new JButton("Binary Insertion Sort");
+        JButton binaryInsertionSortButton =
+                new JButton("Binary Insertion Sort");
         binaryInsertionSortButton.addActionListener(e -> {
             try {
                 visualizer.binaryInsertionSort();
@@ -116,9 +120,7 @@ public class SortingVisualizer extends JPanel {
         });
 
         // Adicionando os botões ao painel de controle
-        JPanel controlPanel = new JPanel();
-        controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        controlPanel.add(new JLabel("Array:"));
+        JPanel controlPanel = new JPanel(new GridLayout(0,2,5,5));
         controlPanel.add(arrayInputField);
         controlPanel.add(generateButton);
         controlPanel.add(bubbleSortButton);
@@ -130,19 +132,24 @@ public class SortingVisualizer extends JPanel {
         controlPanel.add(bitonicSortButton);
         controlPanel.add(radixSortLDSButton);
         controlPanel.revalidate();
-        return controlPanel;
+
+        JScrollPane scrollPane = new JScrollPane(controlPanel);
+        scrollPane.setHorizontalScrollBarPolicy(
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        return scrollPane;
     }
 
     // Método que retorna o botão de injetar array/reiniciar
     private static JButton getjButton(SortingVisualizer visualizer,
                                       JTextField arrayInputField) {
-        JButton generateButton = new JButton("Injetar Array/Reiniciar");
+        JButton generateButton = new JButton("Reiniciar");
+        generateButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         generateButton.addActionListener(e -> {
             try {
                 String input = arrayInputField.getText()
-                        .replace("[", "")
-                        .replace("]", "")
-                        .trim();
+                                              .replace("[", "")
+                                              .replace("]", "")
+                                              .trim();
                 String[] values = input.split(",");
                 int[] array = new int[values.length];
                 for (int i = 0; i < values.length; i++) {
@@ -151,11 +158,12 @@ public class SortingVisualizer extends JPanel {
                 visualizer.setArray(array);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null,
-                        "Deve conter apenas números e virgulas.");
+                                              "Deve conter apenas números e virgulas.");
             }
         });
         return generateButton;
     }
+
     // Getter e Setter
     public int[] getArray() {
         return array.clone();
