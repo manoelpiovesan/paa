@@ -17,7 +17,7 @@ public class SortingVisualizer extends JPanel {
     public static void main(String[] args) {
         int[] array =
                 {90, 50, 30, 70, 80, 60, 20, 10, 40, 3, 123, 43, 78, 99, 200,
-                        132, 100, 7};
+                        132, 100, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 74, 23, 45, 67, 89, 12, 34, 56, 78, 90, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
         JFrame frame = new JFrame("Trabalho de PAA - Manoel e João Marcello");
         SortingVisualizer visualizer = new SortingVisualizer(array, 100);
@@ -132,9 +132,9 @@ public class SortingVisualizer extends JPanel {
         generateButton.addActionListener(e -> {
             try {
                 String input = arrayInputField.getText()
-                                              .replace("[", "")
-                                              .replace("]", "")
-                                              .trim();
+                        .replace("[", "")
+                        .replace("]", "")
+                        .trim();
                 String[] values = input.split(",");
                 int[] array = new int[values.length];
                 for (int i = 0; i < values.length; i++) {
@@ -143,7 +143,7 @@ public class SortingVisualizer extends JPanel {
                 visualizer.setArray(array);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null,
-                                              "Deve conter apenas números e virgulas.");
+                        "Deve conter apenas números e virgulas.");
             }
         });
         return generateButton;
