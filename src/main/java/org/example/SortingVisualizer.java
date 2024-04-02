@@ -6,14 +6,18 @@ import java.util.Arrays;
 
 public class SortingVisualizer extends JPanel {
 
+    // Atributo de delay da animação
     private final int delay;
+    // Atributo do array a ser ordenado
     private int[] array;
 
+    // Construtor da classe
     public SortingVisualizer(int[] array, int delay) {
         this.array = array.clone();
         this.delay = delay;
     }
 
+    // Método main
     public static void main(String[] args) {
         int[] array =
                 {90, 50, 30, 70, 80, 60, 20, 10, 40, 3, 123, 43, 78, 99, 200,
@@ -31,12 +35,14 @@ public class SortingVisualizer extends JPanel {
         frame.setVisible(true);
     }
 
+    // Método que retorna o painel de controle
     private static JPanel getControlPanel(SortingVisualizer visualizer) {
         JTextField arrayInputField = new JTextField(20);
         arrayInputField.setText(Arrays.toString(visualizer.getArray()));
 
         JButton generateButton = getjButton(visualizer, arrayInputField);
 
+        // Criando botões dos algoritmos de ordenação
         JButton bubbleSortButton = new JButton("Bubble Sort");
         bubbleSortButton.addActionListener(e -> {
             try {
@@ -109,6 +115,7 @@ public class SortingVisualizer extends JPanel {
             }
         });
 
+        // Adicionando os botões ao painel de controle
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         controlPanel.add(new JLabel("Array:"));
@@ -126,6 +133,7 @@ public class SortingVisualizer extends JPanel {
         return controlPanel;
     }
 
+    // Método que retorna o botão de injetar array/reiniciar
     private static JButton getjButton(SortingVisualizer visualizer,
                                       JTextField arrayInputField) {
         JButton generateButton = new JButton("Injetar Array/Reiniciar");
@@ -148,7 +156,7 @@ public class SortingVisualizer extends JPanel {
         });
         return generateButton;
     }
-
+    // Getter e Setter
     public int[] getArray() {
         return array.clone();
     }
@@ -158,6 +166,7 @@ public class SortingVisualizer extends JPanel {
         repaint();
     }
 
+    // Método que desenha os retângulos
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         int barWidth = getWidth() / array.length;
@@ -173,6 +182,7 @@ public class SortingVisualizer extends JPanel {
         }
     }
 
+    // Métodos de ordenação
     public void bubbleSort() throws InterruptedException {
         Thread sortingThread = new Thread(() -> {
             try {
@@ -345,7 +355,7 @@ public class SortingVisualizer extends JPanel {
 
     private int getNextGap(int gap) {
         gap = (gap * 10) / 13;
-        return gap < 1 ? 1 : gap;
+        return Math.max(gap, 1);
     }
 
     public void binaryInsertionSort() throws InterruptedException {
