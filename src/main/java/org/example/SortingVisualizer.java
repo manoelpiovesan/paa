@@ -148,6 +148,35 @@ public class SortingVisualizer extends JPanel {
             }
         });
 
+        JButton oddEvenSortButton = new JButton("Odd Even Sort");
+        oddEvenSortButton.addActionListener(e -> {
+            try {
+                visualizer.oddEvenSort();
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+        });
+
+        JButton heapSortButton = new JButton("Heap Sort");
+        heapSortButton.addActionListener(e -> {
+            try {
+                visualizer.heapSort();
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+        });
+
+        JButton mergeSortButton = new JButton("Merge Sort");
+        mergeSortButton.addActionListener(e -> {
+            try {
+                visualizer.mergeSort();
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+        });
+
+
+
         // Adicionando os botões ao painel de controle
         JPanel controlPanel = new JPanel(new GridLayout(0, 2, 5, 5));
         controlPanel.add(arrayInputField);
@@ -163,6 +192,9 @@ public class SortingVisualizer extends JPanel {
         controlPanel.add(cocktailShakeSortButton);
         controlPanel.add(timSortButton);
         controlPanel.add(gnomeSortButton);
+        controlPanel.add(oddEvenSortButton);
+        controlPanel.add(heapSortButton);
+        controlPanel.add(mergeSortButton);
         controlPanel.revalidate();
 
         JScrollPane scrollPane = new JScrollPane(controlPanel);
@@ -231,7 +263,67 @@ public class SortingVisualizer extends JPanel {
         g.drawString(iterations + " Interacoes", 20, 20);
     }
 
+
     // Métodos de ordenação
+
+    public void mergeSort() throws InterruptedException {
+        Thread sortingThread = new Thread(() -> {
+            resetInterations();
+            try {
+                mergeSort(array, 0, array.length - 1);
+            } catch (InterruptedException e) {
+                System.out.println("Thread interrupted");
+            }
+        });
+        sortingThread.start();
+    }
+
+    private void mergeSort(int[] array, int l, int r) throws InterruptedException {
+        if (l < r) {
+            int m = (l + r) / 2;
+            mergeSort(array, l, m);
+            mergeSort(array, m + 1, r);
+            merge(array, l, m, r);
+            SwingUtilities.invokeLater(this::repaint);
+            Thread.sleep(delay);
+        }
+    }
+
+    private void merge(int[] array, int l, int m, int r) {
+        int n1 = m - l + 1;
+        int n2 = r - m;
+        int[] L = new int[n1];
+        int[] R = new int[n2];
+        System.arraycopy(array, l, L, 0, n1);
+        for (int j = 0; j < n2; ++j) {
+            R[j] = array[m + 1 + j];
+        }
+        int i = 0, j = 0;
+        int k = l;
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                array[k] = L[i];
+                i++;
+            } else {
+                array[k] = R[j];
+                j++;
+            }
+            incrementIterations();
+            k++;
+        }
+        while (i < n1) {
+            array[k] = L[i];
+            i++;
+            k++;
+        }
+        while (j < n2) {
+            array[k] = R[j];
+            j++;
+            k++;
+        }
+    }
+
+
     public void bubbleSort() throws InterruptedException {
         Thread sortingThread = new Thread(() -> {
             resetInterations();
@@ -252,6 +344,52 @@ public class SortingVisualizer extends JPanel {
         });
         sortingThread.start();
     }
+
+    public void heapSort() throws InterruptedException {
+        Thread sortingThread = new Thread(() -> {
+            resetInterations();
+            try {
+                int n = array.length;
+                for (int i = n / 2 - 1; i >= 0; i--) {
+                    heapify(array, n, i);
+                }
+                for (int i = n - 1; i > 0; i--) {
+                    swap(0, i);
+                    incrementIterations();
+                    SwingUtilities.invokeLater(this::repaint);
+                    Thread.sleep(delay);
+                    heapify(array, i, 0);
+                }
+            } catch (InterruptedException e) {
+                System.out.println("Thread interrupted");
+            }
+        });
+        sortingThread.start();
+    }
+
+    private void heapify(int[] array, int n, int i) {
+        int largest = i;
+        int l = 2 * i + 1;
+        int r = 2 * i + 2;
+        if (l < n && array[l] > array[largest]) {
+            largest = l;
+        }
+        if (r < n && array[r] > array[largest]) {
+            largest = r;
+        }
+        if (largest != i) {
+            swap(i, largest);
+            incrementIterations();
+            SwingUtilities.invokeLater(this::repaint);
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                System.out.println("Thread interrupted");
+            }
+            heapify(array, n, largest);
+        }
+    }
+
 
     public void cocktailShakeSort() throws InterruptedException {
         Thread sortingThread = new Thread(() -> {
@@ -490,6 +628,40 @@ public class SortingVisualizer extends JPanel {
             }
         }
         return max;
+    }
+
+    public void oddEvenSort() throws InterruptedException {
+        resetInterations();
+        Thread sortingThread = new Thread(() -> {
+            try {
+                int n = array.length;
+                boolean isSorted = false;
+                while (!isSorted) {
+                    isSorted = true;
+                    for (int i = 1; i <= n - 2; i = i + 2) {
+                        if (array[i] > array[i + 1]) {
+                            swap(i, i + 1);
+                            isSorted = false;
+                            incrementIterations();
+                            SwingUtilities.invokeLater(this::repaint);
+                            Thread.sleep(delay);
+                        }
+                    }
+                    for (int i = 0; i <= n - 2; i = i + 2) {
+                        if (array[i] > array[i + 1]) {
+                            swap(i, i + 1);
+                            isSorted = false;
+                            incrementIterations();
+                            SwingUtilities.invokeLater(this::repaint);
+                            Thread.sleep(delay);
+                        }
+                    }
+                }
+            } catch (InterruptedException e) {
+                System.out.println("Thread interrupted");
+            }
+        });
+        sortingThread.start();
     }
 
     public void insertionSort() throws InterruptedException {
