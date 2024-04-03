@@ -21,7 +21,7 @@ public class SortingVisualizer extends JPanel {
 
     // Método main
     public static void main(String[] args) {
-        int[] array = Config.array;
+        int[] array = Config.array.clone();
 
         // instanciando o frame (swing)
         JFrame frame = new JFrame("Trabalho de PAA - Manoel e Joao Marcello");
@@ -391,31 +391,49 @@ public class SortingVisualizer extends JPanel {
     }
 
     public void bitonicSort() throws InterruptedException {
+        resetInterations();
         Thread sortingThread = new Thread(() -> {
             try {
-                int n = array.length;
-                for (int k = 2; k <= n; k = k * 2) {
-                    for (int j = k / 2; j > 0; j = j / 2) {
-                        for (int i = 0; i < n; i++) {
-                            int l = i ^ j;
-                            if (l > i) {
-                                if ((i & k) == 0 && array[i] > array[l]) {
-                                    swap(i, l);
-                                }
-                                if ((i & k) != 0 && array[i] < array[l]) {
-                                    swap(i, l);
-                                }
-                            }
-                        }
-                        SwingUtilities.invokeLater(this::repaint);
-                        Thread.sleep(delay);
-                    }
-                }
+                bitonicSort(array, 0, array.length, true);
+                SwingUtilities.invokeLater(this::repaint);
+                Thread.sleep(delay);
             } catch (InterruptedException e) {
                 System.out.println("Thread interrupted");
             }
+            SwingUtilities.invokeLater(this::repaint);
         });
         sortingThread.start();
+    }
+
+    private void bitonicSort(int[] array, int low, int count, boolean dir) {
+        if (count > 1) {
+            int k = count / 2;
+            bitonicSort(array, low, k, true);
+            bitonicSort(array, low + k, k, false);
+            bitonicMerge(array, low, count, dir);
+            SwingUtilities.invokeLater(this::repaint);
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                System.out.println("Thread interrupted");
+            }
+        }
+    }
+
+    private void bitonicMerge(int[] array, int low, int count, boolean dir) {
+        if (count > 1) {
+            int k = count / 2;
+            for (int i = low; i < low + k; i++) {
+                if (dir == (array[i] > array[i + k])) {
+                    swap(i, i + k);
+                    incrementIterations();
+                    SwingUtilities.invokeLater(this::repaint);
+
+                }
+            }
+            bitonicMerge(array, low, k, dir);
+            bitonicMerge(array, low + k, k, dir);
+        }
     }
 
     public void radixSortLDS() throws InterruptedException {
