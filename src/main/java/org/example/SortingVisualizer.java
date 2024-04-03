@@ -57,14 +57,7 @@ public class SortingVisualizer extends JPanel {
             }
         });
 
-        JButton radixSortButton = new JButton("Radix Sort");
-        radixSortButton.addActionListener(e -> {
-            try {
-                visualizer.radixSort();
-            } catch (InterruptedException interruptedException) {
-                interruptedException.printStackTrace();
-            }
-        });
+
 
         JButton insertionSortButton = new JButton("Insertion Sort");
         insertionSortButton.addActionListener(e -> {
@@ -175,6 +168,16 @@ public class SortingVisualizer extends JPanel {
             }
         });
 
+        JButton radixSortMDSButton = new JButton("Radix Sort MDS");
+        radixSortMDSButton.addActionListener(e -> {
+            try {
+                visualizer.radixSortMDS();
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+        });
+
+
 
 
         // Adicionando os botões ao painel de controle
@@ -182,13 +185,13 @@ public class SortingVisualizer extends JPanel {
         controlPanel.add(arrayInputField);
         controlPanel.add(generateButton);
         controlPanel.add(bubbleSortButton);
-        controlPanel.add(radixSortButton);
         controlPanel.add(insertionSortButton);
         controlPanel.add(shellSortButton);
         controlPanel.add(binaryInsertionSortButton);
         controlPanel.add(combSortButton);
         controlPanel.add(bitonicSortButton);
         controlPanel.add(radixSortLDSButton);
+        controlPanel.add(radixSortMDSButton);
         controlPanel.add(cocktailShakeSortButton);
         controlPanel.add(timSortButton);
         controlPanel.add(gnomeSortButton);
@@ -271,6 +274,7 @@ public class SortingVisualizer extends JPanel {
             resetInterations();
             try {
                 mergeSort(array, 0, array.length - 1);
+                Thread.sleep(delay);
             } catch (InterruptedException e) {
                 System.out.println("Thread interrupted");
             }
@@ -290,46 +294,51 @@ public class SortingVisualizer extends JPanel {
     }
 
     private void merge(int[] array, int l, int m, int r) {
-        int n1 = m - l + 1;
-        int n2 = r - m;
-        int[] L = new int[n1];
-        int[] R = new int[n2];
-        System.arraycopy(array, l, L, 0, n1);
-        for (int j = 0; j < n2; ++j) {
-            R[j] = array[m + 1 + j];
-        }
-        int i = 0, j = 0;
-        int k = l;
-        while (i < n1 && j < n2) {
-            if (L[i] <= R[j]) {
+        Thread mergeThread = new Thread(() -> {
+            int n1 = m - l + 1;
+            int n2 = r - m;
+            int[] L = new int[n1];
+            int[] R = new int[n2];
+            System.arraycopy(array, l, L, 0, n1);
+            System.arraycopy(array, m + 1, R, 0, n2);
+            int i = 0, j = 0;
+            int k = l;
+            while (i < n1 && j < n2) {
+                if (L[i] <= R[j]) {
+                    array[k] = L[i];
+                    i++;
+                } else {
+                    array[k] = R[j];
+                    j++;
+                }
+                incrementIterations();
+                SwingUtilities.invokeLater(this::repaint);
+                k++;
+            }
+            while (i < n1) {
                 array[k] = L[i];
                 i++;
-            } else {
+                k++;
+            }
+            while (j < n2) {
                 array[k] = R[j];
                 j++;
+                k++;
             }
-            incrementIterations();
-            k++;
-        }
-        while (i < n1) {
-            array[k] = L[i];
-            i++;
-            k++;
-        }
-        while (j < n2) {
-            array[k] = R[j];
-            j++;
-            k++;
-        }
+        });
+
+        mergeThread.start();
     }
 
 
+    // bubble sort
     public void bubbleSort() throws InterruptedException {
         Thread sortingThread = new Thread(() -> {
             resetInterations();
             try {
-                for (int i = 0; i < array.length - 1; i++) {
-                    for (int j = 0; j < array.length - i - 1; j++) {
+                int n = array.length;
+                for (int i = 0; i < n - 1; i++) {
+                    for (int j = 0; j < n - i - 1; j++) {
                         if (array[j] > array[j + 1]) {
                             swap(j, j + 1);
                             incrementIterations();
@@ -343,6 +352,53 @@ public class SortingVisualizer extends JPanel {
             }
         });
         sortingThread.start();
+    }
+
+    public void radixSortMDS() throws InterruptedException {
+        resetInterations();
+        Thread sortingThread = new Thread(() -> {
+            try {
+                int max = getMax(array);
+                for (int exp = 1; max / exp > 0; exp *= 10) {
+                    countingSortMDS(array, exp);
+                    SwingUtilities.invokeLater(this::repaint);
+                    Thread.sleep(delay);
+                }
+                SwingUtilities.invokeLater(this::repaint);
+            } catch (InterruptedException e) {
+                System.out.println("Thread interrupted");
+            }
+        });
+        sortingThread.start();
+    }
+
+    private void countingSortMDS(int[] array, int exp) {
+        Thread countingSortThread = new Thread(() -> {
+            try {
+                int n = array.length;
+                int[] output = new int[n];
+                int[] count = new int[10];
+                for (int j : array) {
+                    count[(j / exp) % 10]++;
+                    incrementIterations();
+                }
+                for (int i = 1; i < 10; i++) {
+                    count[i] += count[i - 1];
+                    incrementIterations();
+                }
+                for (int i = n - 1; i >= 0; i--) {
+                    output[count[(array[i] / exp) % 10] - 1] = array[i];
+                    count[(array[i] / exp) % 10]--;
+                    incrementIterations();
+                }
+                Thread.sleep(delay);
+                SwingUtilities.invokeLater(this::repaint);
+                System.arraycopy(output, 0, array, 0, n);
+            } catch (InterruptedException e) {
+                System.out.println("Thread interrupted");
+            }
+        });
+        countingSortThread.start();
     }
 
     public void heapSort() throws InterruptedException {
@@ -481,52 +537,8 @@ public class SortingVisualizer extends JPanel {
         sortingThread.start();
     }
 
-    public void radixSort() throws InterruptedException {
-        resetInterations();
-        Thread sortingThread = new Thread(() -> {
-            try {
-                int max = getMax(array);
-                for (int exp = 1; max / exp > 0; exp *= 10) {
-                    // Incrementando iterações dentro do countingSort
-                    countingSort(array, exp);
-                    SwingUtilities.invokeLater(this::repaint);
-                    Thread.sleep(delay);
-                }
-                SwingUtilities.invokeLater(this::repaint);
-            } catch (InterruptedException e) {
-                System.out.println("Thread interrupted");
-            }
-        });
-        sortingThread.start();
-    }
 
-    private void countingSort(int[] array, int exp) {
-        Thread countingSortThread = new Thread(() -> {
-            try {
-                int n = array.length;
-                int[] output = new int[n];
-                int[] count = new int[10];
-                for (int j : array) {
-                    count[(j / exp) % 10]++;
-                    incrementIterations();
-                }
-                for (int i = 1; i < 10; i++) {
-                    count[i] += count[i - 1];
-                    incrementIterations();
-                }
-                for (int i = n - 1; i >= 0; i--) {
-                    output[count[(array[i] / exp) % 10] - 1] = array[i];
-                    count[(array[i] / exp) % 10]--;
-                    incrementIterations();
-                }
-                Thread.sleep(delay);
-                System.arraycopy(output, 0, array, 0, n);
-            } catch (InterruptedException e) {
-                System.out.println("Thread interrupted");
-            }
-        });
-        countingSortThread.start();
-    }
+
 
     public void bitonicSort() throws InterruptedException {
         resetInterations();
@@ -633,32 +645,26 @@ public class SortingVisualizer extends JPanel {
     public void oddEvenSort() throws InterruptedException {
         resetInterations();
         Thread sortingThread = new Thread(() -> {
-            try {
-                int n = array.length;
-                boolean isSorted = false;
-                while (!isSorted) {
-                    isSorted = true;
-                    for (int i = 1; i <= n - 2; i = i + 2) {
-                        if (array[i] > array[i + 1]) {
-                            swap(i, i + 1);
-                            isSorted = false;
-                            incrementIterations();
-                            SwingUtilities.invokeLater(this::repaint);
-                            Thread.sleep(delay);
-                        }
-                    }
-                    for (int i = 0; i <= n - 2; i = i + 2) {
-                        if (array[i] > array[i + 1]) {
-                            swap(i, i + 1);
-                            isSorted = false;
-                            incrementIterations();
-                            SwingUtilities.invokeLater(this::repaint);
-                            Thread.sleep(delay);
-                        }
+            int n = array.length;
+            boolean isSorted = false;
+            while (!isSorted) {
+                isSorted = true;
+                for (int i = 1; i <= n - 2; i = i + 2) {
+                    if (array[i] > array[i + 1]) {
+                        swap(i, i + 1);
+                        isSorted = false;
+                        incrementIterations();
+                        SwingUtilities.invokeLater(this::repaint);
                     }
                 }
-            } catch (InterruptedException e) {
-                System.out.println("Thread interrupted");
+                for (int i = 0; i <= n - 2; i = i + 2) {
+                    if (array[i] > array[i + 1]) {
+                        swap(i, i + 1);
+                        isSorted = false;
+                        incrementIterations();
+                        SwingUtilities.invokeLater(this::repaint);
+                    }
+                }
             }
         });
         sortingThread.start();
