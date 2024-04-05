@@ -1,4 +1,4 @@
-## Como inciar
+## Como iniciar
 ```bash
 git clone https://github.com/manoelpiovesan/paa.git
 ```
@@ -12,7 +12,7 @@ cd paa
 java -jar build/libs/paa2-1.jar
 ```
 
-## Implemented Algorithms
+## Algoritmos implementados
 
 ---
 - [x] Bitonic Sort
