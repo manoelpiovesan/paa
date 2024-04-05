@@ -19,17 +19,18 @@ public class SortingVisualizer extends JPanel {
         this.delay = delay;
     }
 
-    // Método main
+    ///
+    /// Main
+    ///
     public static void main(String[] args) {
         int[] array = Config.array.clone();
 
-        // instanciando o frame (swing)
+        // Instanciando o frame / janela (swing)
         JFrame frame = new JFrame("Trabalho de PAA - Manoel e Joao Marcello");
-        // instanciando o visualizador em barras
+        // Instanciando a propria classe
         SortingVisualizer visualizer = new SortingVisualizer(array, 1);
-        // instanciando o painel de controle
+        // Instanciando o painel de controle (botões)
         JScrollPane controlPanel = getControlPanel(visualizer);
-        // Contador
 
         // Adicionando os componentes ao frame
         frame.add(visualizer, BorderLayout.CENTER);
@@ -39,7 +40,9 @@ public class SortingVisualizer extends JPanel {
         frame.setVisible(true);
     }
 
-    // Método que retorna o painel de controle com os botões
+    ///
+    /// Método que retorna o painel de controle com os botões
+    ///
     private static JScrollPane getControlPanel(SortingVisualizer visualizer) {
         JTextField arrayInputField = new JTextField(20);
         // Injetando array inicial
@@ -56,8 +59,6 @@ public class SortingVisualizer extends JPanel {
                 interruptedException.printStackTrace();
             }
         });
-
-
 
         JButton insertionSortButton = new JButton("Insertion Sort");
         insertionSortButton.addActionListener(e -> {
@@ -177,11 +178,18 @@ public class SortingVisualizer extends JPanel {
             }
         });
 
-
-
+        JButton selectionSortButton = new JButton("Selection Sort");
+        selectionSortButton.addActionListener(e -> {
+            try {
+                visualizer.selectionSort();
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+        });
 
         // Adicionando os botões ao painel de controle
         JPanel controlPanel = new JPanel(new GridLayout(0, 2, 5, 5));
+
         controlPanel.add(arrayInputField);
         controlPanel.add(generateButton);
         controlPanel.add(bubbleSortButton);
@@ -198,6 +206,7 @@ public class SortingVisualizer extends JPanel {
         controlPanel.add(oddEvenSortButton);
         controlPanel.add(heapSortButton);
         controlPanel.add(mergeSortButton);
+        controlPanel.add(selectionSortButton);
         controlPanel.revalidate();
 
         JScrollPane scrollPane = new JScrollPane(controlPanel);
@@ -206,13 +215,16 @@ public class SortingVisualizer extends JPanel {
         return scrollPane;
     }
 
-    // Método que retorna o botão de reiniciar
+    ///
+    /// Método que retorna o botão de reiniciar
+    ///
     private static JButton getjButton(SortingVisualizer visualizer,
                                       JTextField arrayInputField) {
         JButton generateButton = new JButton("Reiniciar");
         generateButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         generateButton.addActionListener(e -> {
             try {
+                // Pegando o texto do campo de input e convertendo para array
                 String input = arrayInputField.getText()
                                               .replace("[", "")
                                               .replace("]", "")
@@ -231,7 +243,9 @@ public class SortingVisualizer extends JPanel {
         return generateButton;
     }
 
-    // Getter e Setter
+    ///
+    /// Getters e Setters
+    ///
     public int[] getArray() {
         return array.clone();
     }
@@ -249,10 +263,12 @@ public class SortingVisualizer extends JPanel {
         iterations = 0;
     }
 
-    // Método que desenha os retângulos
+    ///
+    /// Método de desenho dos gráficos de barras
+    ///
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        int barWidth = (int) (getWidth() / (array.length * 0.99));
+        int barWidth = (int) (getWidth() / (array.length));
         int maxHeight = getHeight();
 
         for (int i = 0; i < array.length; i++) {
@@ -267,8 +283,10 @@ public class SortingVisualizer extends JPanel {
     }
 
 
-    // Métodos de ordenação
 
+    ///
+    /// Merge Sort e funções auxiliares
+    ///
     public void mergeSort() throws InterruptedException {
         Thread sortingThread = new Thread(() -> {
             resetInterations();
@@ -282,7 +300,8 @@ public class SortingVisualizer extends JPanel {
         sortingThread.start();
     }
 
-    private void mergeSort(int[] array, int l, int r) throws InterruptedException {
+    private void mergeSort(int[] array, int l, int r)
+            throws InterruptedException {
         if (l < r) {
             int m = (l + r) / 2;
             mergeSort(array, l, m);
@@ -330,8 +349,9 @@ public class SortingVisualizer extends JPanel {
         mergeThread.start();
     }
 
-
-    // bubble sort
+    ///
+    /// Bubble Sort
+    ///
     public void bubbleSort() throws InterruptedException {
         Thread sortingThread = new Thread(() -> {
             resetInterations();
@@ -354,6 +374,9 @@ public class SortingVisualizer extends JPanel {
         sortingThread.start();
     }
 
+    ///
+    /// Radix Sort MDS e funções auxiliares
+    ///
     public void radixSortMDS() throws InterruptedException {
         resetInterations();
         Thread sortingThread = new Thread(() -> {
@@ -401,6 +424,37 @@ public class SortingVisualizer extends JPanel {
         countingSortThread.start();
     }
 
+    ///
+    /// Selection Sort
+    ///
+    public void selectionSort() throws InterruptedException {
+        Thread sortingThread = new Thread(() -> {
+            resetInterations();
+            try {
+                int n = array.length;
+                for (int i = 0; i < n - 1; i++) {
+                    int minIndex = i;
+                    for (int j = i + 1; j < n; j++) {
+                        if (array[j] < array[minIndex]) {
+                            minIndex = j;
+                        }
+                        incrementIterations();
+                    }
+                    swap(minIndex, i);
+                    SwingUtilities.invokeLater(this::repaint);
+                    Thread.sleep(delay);
+                }
+            } catch (InterruptedException e) {
+                System.out.println("Thread interrupted");
+            }
+        });
+        sortingThread.start();
+    }
+
+
+    ///
+    /// Heap Sort e funções auxiliares
+    ///
     public void heapSort() throws InterruptedException {
         Thread sortingThread = new Thread(() -> {
             resetInterations();
@@ -446,7 +500,9 @@ public class SortingVisualizer extends JPanel {
         }
     }
 
-
+    ///
+    /// Cocktail Shake Sort
+    ///
     public void cocktailShakeSort() throws InterruptedException {
         Thread sortingThread = new Thread(() -> {
             resetInterations();
@@ -488,6 +544,9 @@ public class SortingVisualizer extends JPanel {
         sortingThread.start();
     }
 
+    ///
+    /// Tim Sort
+    ///
     public void timSort() throws InterruptedException {
         Thread sortingThread = new Thread(() -> {
             resetInterations();
@@ -509,6 +568,9 @@ public class SortingVisualizer extends JPanel {
         sortingThread.start();
     }
 
+    ///
+    /// Gnome Sort
+    ///
     public void gnomeSort() throws InterruptedException {
         Thread sortingThread = new Thread(() -> {
             resetInterations();
@@ -537,9 +599,9 @@ public class SortingVisualizer extends JPanel {
         sortingThread.start();
     }
 
-
-
-
+    ///
+    /// Bitonic Sort e funções auxiliares
+    ///
     public void bitonicSort() throws InterruptedException {
         resetInterations();
         Thread sortingThread = new Thread(() -> {
@@ -586,6 +648,9 @@ public class SortingVisualizer extends JPanel {
         }
     }
 
+    ///
+    /// Radix Sort LDS e funções auxiliares
+    ///
     public void radixSortLDS() throws InterruptedException {
         resetInterations();
         Thread sortingThread = new Thread(() -> {
@@ -642,6 +707,9 @@ public class SortingVisualizer extends JPanel {
         return max;
     }
 
+    ///
+    /// Odd Even Sort
+    ///
     public void oddEvenSort() throws InterruptedException {
         resetInterations();
         Thread sortingThread = new Thread(() -> {
@@ -670,6 +738,9 @@ public class SortingVisualizer extends JPanel {
         sortingThread.start();
     }
 
+    ///
+    /// Insertion Sort
+    ///
     public void insertionSort() throws InterruptedException {
         resetInterations();
         Thread sortingThread = new Thread(() -> {
@@ -694,6 +765,9 @@ public class SortingVisualizer extends JPanel {
         sortingThread.start();
     }
 
+    ///
+    /// Comb Sort e funções auxiliares
+    ///
     public void combSort() throws InterruptedException {
         resetInterations();
         Thread sortingThread = new Thread(() -> {
@@ -728,6 +802,9 @@ public class SortingVisualizer extends JPanel {
         return Math.max(gap, 1);
     }
 
+    ///
+    /// Binary Insertion Sort
+    ///
     public void binaryInsertionSort() throws InterruptedException {
         resetInterations();
         Thread sortingThread = new Thread(() -> {
@@ -749,6 +826,9 @@ public class SortingVisualizer extends JPanel {
         sortingThread.start();
     }
 
+    ///
+    /// Shell Sort
+    ///
     public void shellSort() throws InterruptedException {
         resetInterations();
         Thread sortingThread = new Thread(() -> {
