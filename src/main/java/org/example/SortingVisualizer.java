@@ -45,12 +45,11 @@ public class SortingVisualizer extends JPanel {
     ///
     private static JScrollPane getControlPanel(SortingVisualizer visualizer) {
         JTextField arrayInputField = new JTextField(20);
-        // Injetando array inicial
         arrayInputField.setText(Arrays.toString(visualizer.getArray()));
 
         JButton generateButton = getjButton(visualizer, arrayInputField);
 
-        // Criando botões dos algoritmos de ordenação
+        // Adicionando os botões de ordenação
         JButton bubbleSortButton = new JButton("Bubble Sort");
         bubbleSortButton.addActionListener(e -> {
             try {
@@ -282,8 +281,6 @@ public class SortingVisualizer extends JPanel {
         g.drawString(iterations + " Interacoes", 20, 20);
     }
 
-
-
     ///
     /// Merge Sort e funções auxiliares
     ///
@@ -450,7 +447,6 @@ public class SortingVisualizer extends JPanel {
         });
         sortingThread.start();
     }
-
 
     ///
     /// Heap Sort e funções auxiliares

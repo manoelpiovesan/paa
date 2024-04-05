@@ -1,3 +1,17 @@
+## Como inciar
+```bash
+git clone https://github.com/manoelpiovesan/paa.git
+```
+```bash
+cd paa
+```
+```bash
+./gradlew build
+```
+```bash
+java -jar build/libs/paa2-1.jar
+```
+
 ## Implemented Algorithms
 
 ---
@@ -15,3 +29,4 @@
 - [x] Odd-Even Sort
 - [x] Tim Sort
 - [x] Binary Insertion Sort
+- [x] Selection Sort
