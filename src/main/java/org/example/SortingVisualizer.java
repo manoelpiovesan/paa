@@ -47,7 +47,7 @@ public class SortingVisualizer extends JPanel {
         JTextField arrayInputField = new JTextField(20);
         arrayInputField.setText(Arrays.toString(visualizer.getArray()));
 
-        JButton generateButton = getjButton(visualizer, arrayInputField);
+        JPanel generateButton = getButtonPanel(visualizer, arrayInputField);
 
         // Adicionando os botões de ordenação
         JButton bubbleSortButton = new JButton("Bubble Sort");
@@ -217,17 +217,16 @@ public class SortingVisualizer extends JPanel {
     ///
     /// Método que retorna o botão de reiniciar
     ///
-    private static JButton getjButton(SortingVisualizer visualizer,
-                                      JTextField arrayInputField) {
+    private static JPanel getButtonPanel(SortingVisualizer visualizer, JTextField arrayInputField) {
         JButton generateButton = new JButton("Reiniciar");
         generateButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         generateButton.addActionListener(e -> {
             try {
                 // Pegando o texto do campo de input e convertendo para array
                 String input = arrayInputField.getText()
-                                              .replace("[", "")
-                                              .replace("]", "")
-                                              .trim();
+                                                .replace("[", "")
+                                                .replace("]", "")
+                                                .trim();
                 String[] values = input.split(",");
                 int[] array = new int[values.length];
                 for (int i = 0; i < values.length; i++) {
@@ -235,12 +234,37 @@ public class SortingVisualizer extends JPanel {
                 }
                 visualizer.setArray(array);
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null,
-                                              "Deve conter apenas números e virgulas.");
+                JOptionPane.showMessageDialog(null, "Deve conter apenas números e virgulas.");
             }
         });
-        return generateButton;
+    
+        // Adicionando botões de tamanho de vetor
+        JButton button500 = new JButton("500");
+        button500.addActionListener(e -> {
+            arrayInputField.setText(Arrays.toString(Config.array_500));
+        });
+    
+        JButton button1000 = new JButton("1000");
+        button1000.addActionListener(e -> {
+            arrayInputField.setText(Arrays.toString(Config.array_1000));
+        });
+    
+        JButton button2000 = new JButton("2000");
+        button2000.addActionListener(e -> {
+            arrayInputField.setText(Arrays.toString(Config.array_2000));
+        });
+    
+        // Criando um painel para organizar os botões
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 4));
+        buttonPanel.add(generateButton);
+        buttonPanel.add(button500);
+        buttonPanel.add(button1000);
+        buttonPanel.add(button2000);
+    
+        return buttonPanel;
     }
+    
 
     ///
     /// Getters e Setters
