@@ -238,30 +238,12 @@ public class SortingVisualizer extends JPanel {
             }
         });
     
-        // Adicionando botões de tamanho de vetor
-        JButton button500 = new JButton("500");
-        button500.addActionListener(e -> {
-            arrayInputField.setText(Arrays.toString(Config.array_500));
-        });
-    
-        JButton button1000 = new JButton("1000");
-        button1000.addActionListener(e -> {
-            arrayInputField.setText(Arrays.toString(Config.array_1000));
-        });
-    
-        JButton button2000 = new JButton("2000");
-        button2000.addActionListener(e -> {
-            arrayInputField.setText(Arrays.toString(Config.array_2000));
-        });
-    
+
         // Criando um painel para organizar os botões
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(1, 4));
         buttonPanel.add(generateButton);
-        buttonPanel.add(button500);
-        buttonPanel.add(button1000);
-        buttonPanel.add(button2000);
-    
+
         return buttonPanel;
     }
     
